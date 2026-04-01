@@ -1,10 +1,10 @@
-# POEM - Scanner v0.5
+# POEM - Scanner v0.6
 # Reductive Inference Model - Shadow Path Implementation
 import datetime
 
 def run_scanner(question, threshold=1, attempt=1):
 
-    factual_words = ["what", "when", "where", "who", "how many"]
+    factual_words = ["what", "when", "where", "who", "how many","is"]
     reasoning_words = ["why", "how", "explain"]
     opinion_words = ["should", "better", "best", "worst"]
 
@@ -31,6 +31,7 @@ def run_scanner(question, threshold=1, attempt=1):
             conflict = " vs ".join(signals)
             return f"conflicting signals: {conflict} - proceeding carefully"
 
+    
     # Detection with adjustable threshold
     if factual_matches >= threshold and factual_matches >= reasoning_matches and factual_matches >= opinion_matches:
         category = "FACTUAL"
@@ -72,12 +73,64 @@ def run_scanner(question, threshold=1, attempt=1):
         "attempt": attempt
     }
 
+def detect_answer_shape(category, question):
+    
+    # Shape signals
+    number_hints = ["how many", "how much", "what year", 
+                    "how long", "how far", "what temperature"]
+    name_hints = ["who", "which person", "what person"]
+    place_hints = ["where", "what city", "what country", 
+                   "what place"]
+    yesno_hints = ["is ", "are ", "was ", "were ", 
+                   "did ", "does ", "do "]
+    
+    # Detect shape
+    if any(hint in question for hint in number_hints):
+        shape = "NUMBER"
+        description = "answer is likely a quantity, measurement or date"
+        eliminated_shapes = "names, places, yes/no, explanations"
+        
+    elif any(hint in question for hint in name_hints):
+        shape = "PERSON NAME"
+        description = "answer is likely a proper name"
+        eliminated_shapes = "numbers, places, yes/no, explanations"
+        
+    elif any(hint in question for hint in place_hints):
+        shape = "PLACE NAME"
+        description = "answer is likely a location or place"
+        eliminated_shapes = "numbers, names, yes/no, explanations"
+        
+    elif any(hint in question for hint in yesno_hints):
+        shape = "YES/NO"
+        description = "answer is likely boolean - true or false"
+        eliminated_shapes = "numbers, names, places, explanations"
+        
+    elif category == "REASONING":
+        shape = "EXPLANATION"
+        description = "answer is likely multi-sentence reasoning"
+        eliminated_shapes = "numbers, names, places, yes/no"
+        
+    elif category == "OPINION":
+        shape = "RECOMMENDATION"
+        description = "answer is likely subjective with reasoning"
+        eliminated_shapes = "numbers, facts, dates, names"
+        
+    else:
+        shape = "GENERAL"
+        description = "answer shape unclear - minimal elimination"
+        eliminated_shapes = "nothing additional"
+    
+    return {
+        "shape": shape,
+        "description": description,
+        "eliminated_shapes": eliminated_shapes
+    }
 
 # Main program
 question = input("Ask POEM a question: ")
 question = question.lower()
 
-print("\n--- POEM Scanner v0.5 Running ---")
+print("\n--- POEM Scanner v0.6 Running ---")
 
 # First attempt - strict threshold
 result = run_scanner(question, threshold=1, attempt=1)
@@ -107,8 +160,12 @@ print(f"Confidence reason:   {result['explanation']}")
 print(f"Safety system:       {result['safety_status']}")
 print(f"Shadow path used:    {result['shadow_path_used']}")
 print(f"Eliminated:          {result['eliminated']}")
+shape_result = detect_answer_shape(result['category'], question)
+print(f"Answer shape:        {shape_result['shape']}")
+print(f"Shape description:   {shape_result['description']}")
+print(f"Shape eliminated:    {shape_result['eliminated_shapes']}")
 print("Possibility space reduced before deep thinking begins.")
-print("\nPOEM v0.5 - Process Of Elimination Master")
+print("\nPOEM v0.6 - Process Of Elimination Master")
 
 # Log entry
 log_entry = f"""
@@ -121,6 +178,8 @@ Confidence: {result['confidence']}%
 Reason: {result['explanation']}
 Shadow Path Used: {result['shadow_path_used']}
 Eliminated: {result['eliminated']}
+Shape: {shape_result['shape']}
+Shape eliminated: {shape_result['eliminated_shapes']}
 Trigger: {result['trigger']}
 Safety: {result['safety_status']}
 """
