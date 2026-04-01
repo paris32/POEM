@@ -77,16 +77,20 @@ def detect_answer_shape(category, question):
     
     # Shape signals
     number_hints = ["how many", "how much", "what year", 
-                    "how long", "how far", "what temperature"]
+                    "how long", "how far", "what temperature",
+                    "when "]
     name_hints = ["who", "which person", "what person"]
     place_hints = ["where", "what city", "what country", 
                    "what place"]
-    yesno_hints = ["is ", "are ", "was ", "were ", 
-                   "did ", "does ", "do "]
+    yesno_starters = ["is ", "are ", "was ", "were ", 
+                      "did ", "does ", "do ", "can ", 
+                      "could ", "would ", "should "]
     
-    # Detect shape
+    question_start = question.strip()
+
+    # Detect shape — order matters, most specific first
     if any(hint in question for hint in number_hints):
-        shape = "NUMBER"
+        shape = "NUMBER/DATE"
         description = "answer is likely a quantity, measurement or date"
         eliminated_shapes = "names, places, yes/no, explanations"
         
@@ -99,8 +103,8 @@ def detect_answer_shape(category, question):
         shape = "PLACE NAME"
         description = "answer is likely a location or place"
         eliminated_shapes = "numbers, names, yes/no, explanations"
-        
-    elif any(hint in question for hint in yesno_hints):
+
+    elif any(question_start.startswith(starter) for starter in yesno_starters):
         shape = "YES/NO"
         description = "answer is likely boolean - true or false"
         eliminated_shapes = "numbers, names, places, explanations"
@@ -125,6 +129,7 @@ def detect_answer_shape(category, question):
         "description": description,
         "eliminated_shapes": eliminated_shapes
     }
+
 
 # Main program
 question = input("Ask POEM a question: ")
