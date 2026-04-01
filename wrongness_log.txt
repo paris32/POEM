@@ -1,0 +1,27 @@
+
+---
+Timestamp: 2026-04-01 15:47:47.449260
+Question: what is the capital of france?
+Category: FACTUAL
+Confidence: 100%
+Eliminated: opinions, explanations, recommendations
+Trigger: factual keyword detected
+Safety: Confidence sufficient - elimination proceeding
+
+---
+Timestamp: 2026-04-01 15:49:01.632378
+Question: what do you think is best? potatoes or tomatoes?
+Category: UNKNOWN
+Confidence: 0%
+Eliminated: nothing yet - need more analysis
+Trigger: no clear signal found
+Safety: WARNING: Low confidence - elimination conservative
+
+---
+Timestamp: 2026-04-01 15:50:30.712398
+Question: what should i do when it rains?
+Category: FACTUAL
+Confidence: 67%
+Eliminated: opinions, explanations, recommendations
+Trigger: factual keyword detected
+Safety: Confidence sufficient - elimination proceeding

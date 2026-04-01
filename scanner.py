@@ -1,4 +1,4 @@
-# POEM - Mini Scanner v0.2
+# POEM - Mini Scanner v0.3
 
 question = input("Ask POEM a question: ")
 question = question.lower()
@@ -16,7 +16,7 @@ opinion_matches = sum(1 for word in opinion_words if word in question)
 total_matches = factual_matches + reasoning_matches + opinion_matches
 
 # Scanner elimination logic
-print("\n--- POEM Scanner v0.2 Running ---")
+print("\n--- POEM Scanner v0.3 Running ---")
 
 if factual_matches > reasoning_matches and factual_matches > opinion_matches:
     category = "FACTUAL"
@@ -56,4 +56,23 @@ print(f"Confidence score: {confidence}%")
 print(f"Safety system: {safety_status}")
 print(f"Eliminated: {eliminated}")
 print(f"Possibility space reduced before deep thinking begins.")
-print("\nPOEM v0.2 - Process of Elimination Master")
+print("\nPOEM v0.3 - Process of Elimination Master")
+
+# Wrongness log seed of training dataset
+import datetime
+
+log_entry = f"""
+---
+Timestamp: {datetime.datetime.now()}
+Question: {question}
+Category: {category}
+Confidence: {confidence}%
+Eliminated: {eliminated}
+Trigger: {trigger}
+Safety: {safety_status}
+"""
+
+with open("wrongness_log.txt", "a") as log:
+    log.write(log_entry)
+
+print("Entry recorded to wrongness log.")
